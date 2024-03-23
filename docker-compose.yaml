@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  cms-school:
+    build: .
+    ports:
+      - "3333:3333"
+    depends_on:
+      - cms-school-db
+
+  cms-school-db:
+    image: postgres:latest
+    container_name: cms-school-db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: cms-school
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U root -d cms-school' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
