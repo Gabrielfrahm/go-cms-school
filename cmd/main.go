@@ -12,8 +12,8 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
+		w.Write([]byte("welcome!"))
 	})
-	fmt.Println("server on")
+	fmt.Println("server on!")
 	http.ListenAndServe(":3333", r)
 }

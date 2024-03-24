@@ -18,14 +18,24 @@ COPY . .
 # Aqui especificamos o caminho exato do arquivo main.go
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o cms-school ./cmd/main.go
 
-# Etapa final usa a imagem scratch por ser a mais leve e segura
-FROM scratch
+# Usar a mesma imagem do Go como base para a imagem final
+FROM golang:1.22
 
-# Copiar o binário compilado para a nova etapa
-COPY --from=builder /app/cms-school /
+# Definir o diretório de trabalho na imagem final
+WORKDIR /app
+
+# Instalar o Air na imagem final
+RUN go install github.com/cosmtrek/air@latest
+
+# Adicionar o diretório de binários do Go ao PATH na imagem final
+ENV PATH="/go/bin:${PATH}"
+
+# Copiar o binário compilado e os arquivos de código-fonte para a imagem final
+COPY --from=builder /app/cms-school /cms-school
+COPY . .
 
 # Expõe a porta em que sua aplicação estará ouvindo
 EXPOSE 3333
 
-# Define o comando para executar o aplicativo
-ENTRYPOINT ["/cms-school"]
+# Define o comando para executar o aplicativo usando o Air para hot reloading
+ENTRYPOINT ["air"]
