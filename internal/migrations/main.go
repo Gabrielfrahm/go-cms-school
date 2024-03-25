@@ -6,6 +6,7 @@ import (
 	"log"
 	"path/filepath"
 
+	"github.com/Gabrielfrahm/go-cms-school/internal/config"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -15,6 +16,9 @@ import (
 // go run internal/migrations/main.go -action=up
 // go run internal/migrations/main.go -action=down
 func main() {
+	// initial configs
+	cfg := config.Load()
+
 	var action string
 	flag.StringVar(&action, "action", "up", "migration action 'up' or 'down'")
 
@@ -24,7 +28,7 @@ func main() {
 	migrationsPath := filepath.Join("internal", "migrations", "sql", action)
 
 	// Construir a URL de conexão com o banco de dados (ajustar conforme necessário)
-	dbURL := "postgres://root:root@localhost:5432/cms-school?sslmode=disable"
+	dbURL := cfg.ConnectionString
 
 	// Criar instância de migration
 	m, err := migrate.New(
