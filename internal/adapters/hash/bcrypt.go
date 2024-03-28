@@ -8,11 +8,18 @@ type BcryptAdapter struct {
 	salt int
 }
 
+func NewBcryptAdapter(salt int) *BcryptAdapter {
+	return &BcryptAdapter{
+		salt: salt,
+	}
+}
+
 func (b *BcryptAdapter) Hashed(value string) (string, error) {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(value), b.salt)
 	return string(hashedBytes), err
 }
 
-func (b *BcryptAdapter) CompareHashed(value, hashedValue string) error {
-	return bcrypt.CompareHashAndPassword([]byte(hashedValue), []byte(value))
+func (b *BcryptAdapter) CompareHashed(value, hashedValue string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedValue), []byte(value))
+	return err == nil, err
 }
