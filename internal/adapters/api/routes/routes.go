@@ -1,20 +1,17 @@
 package routes
 
 import (
-	"github.com/Gabrielfrahm/go-cms-school/internal/adapters/api/controllers/login"
-	"github.com/Gabrielfrahm/go-cms-school/internal/adapters/hash"
+	"database/sql"
 
-	usecase "github.com/Gabrielfrahm/go-cms-school/internal/core/usecases/login"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
-func SetupRoutes() *chi.Mux {
+func SetupRoutes(db *sql.DB) *chi.Mux {
 	router := chi.NewRouter()
+	router.Use(middleware.Logger)
 
-	hasher := hash.NewBcryptAdapter(12)
+	router.Mount("/login", LoginRoutes(db))
 
-	loginUseCase := usecase.NewLoginUserCase(nil, hasher)
-
-	router.Mount("/login", LoginRoutes(login.NewLoginController(loginUseCase)))
 	return router
 }

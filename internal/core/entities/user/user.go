@@ -9,16 +9,16 @@ import (
 )
 
 type User struct {
-	ID          string                  `json:"id"`
-	Name        *string                 `json:"name"`
-	Email       *string                 `json:"email"`
-	Password    *string                 `json:"password"`
-	Type_user   string                  `json:"type_user"`
-	Profile     profile.Profile         `json:"profile"`
-	Permissions []permission.Permission `json:"permissions,omitempty"`
-	Created_at  *time.Time              `json:"created_at"`
-	Updated_at  *time.Time              `json:"updated_at"`
-	Deleted_at  *time.Time              `json:"deleted_at,omitempty"`
+	ID          string                `json:"id"`
+	Name        *string               `json:"name"`
+	Email       *string               `json:"email"`
+	Password    *string               `json:"password"`
+	Type_user   string                `json:"type_user"`
+	Profile     profile.Profile       `json:"profile"`
+	Permissions permission.Permission `json:"permissions,omitempty"`
+	Created_at  *time.Time            `json:"created_at"`
+	Updated_at  *time.Time            `json:"updated_at"`
+	Deleted_at  *time.Time            `json:"deleted_at,omitempty"`
 }
 
 func NewUser(
@@ -28,7 +28,7 @@ func NewUser(
 	password *string,
 	typeUser string,
 	profile profile.Profile,
-	permissions []permission.Permission,
+	permissions permission.Permission,
 	createdAt *time.Time, updatedAt *time.Time, deletedAt *time.Time,
 ) *User {
 	var newID string
@@ -68,7 +68,7 @@ func UpdateUser(
 	email *string,
 	password *string,
 	profile *profile.Profile,
-	permissions *[]permission.Permission,
+	permissions *permission.Permission,
 ) {
 	if name != nil {
 		user.Name = name

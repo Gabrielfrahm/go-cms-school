@@ -1,6 +1,8 @@
 package login
 
 import (
+	"errors"
+
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/entities/user"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/ports/adapters"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/ports/repositories"
@@ -8,33 +10,30 @@ import (
 )
 
 type LoginUseCase struct {
-	// userRepo repositories.UserRepository
-	hasher adapters.Hash
+	userRepo repositories.UserRepository
+	hasher   adapters.Hash
 }
 
 func NewLoginUserCase(userRepo repositories.UserRepository, hasher adapters.Hash) usecases.LoginUseCase {
 	return &LoginUseCase{
-		// userRepo: userRepo,
-		hasher: hasher,
+		userRepo: userRepo,
+		hasher:   hasher,
 	}
 }
 
 // Login implements usecases.LoginUseCase.
 func (l *LoginUseCase) Login(email string, password string) (*user.User, error) {
-	// user, err := l.userRepo.FindByEmail(email)
+	user, err := l.userRepo.FindByEmail(email)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
-	// _, err = l.hasher.CompareHashed(password, *user.Password)
+	_, err = l.hasher.CompareHashed(password, *user.Password)
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, errors.New("email or password incorrect")
+	}
 
-	return &user.User{
-		Email:    &email,
-		Password: &password,
-	}, nil
+	return user, nil
 }

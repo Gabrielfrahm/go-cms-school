@@ -2,27 +2,27 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Gabrielfrahm/go-cms-school/internal/adapters/api/routes"
 	"github.com/Gabrielfrahm/go-cms-school/internal/config"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/Gabrielfrahm/go-cms-school/internal/config/database"
 )
 
 func main() {
 	// initial config
 	cfg := config.Load()
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome!"))
-	})
-
-	router := routes.SetupRoutes()
-	r.Mount("/", router)
+	db, err := database.Connection()
+	if err != nil {
+		log.Fatalln("aqui", err)
+	}
+	defer db.Close()
+	// initial routes
+	router := routes.SetupRoutes(db)
+	router.Mount("/", router)
 
 	fmt.Println("server on!")
-	http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), r)
+	http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), router)
 }
