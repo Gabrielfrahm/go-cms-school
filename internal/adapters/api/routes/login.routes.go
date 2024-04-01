@@ -2,6 +2,7 @@ package routes
 
 import (
 	"database/sql"
+	"os"
 
 	"github.com/Gabrielfrahm/go-cms-school/internal/adapters/api/controllers/login"
 	"github.com/Gabrielfrahm/go-cms-school/internal/adapters/hash"
@@ -15,7 +16,7 @@ func LoginRoutes(db *sql.DB) chi.Router {
 	r := chi.NewRouter()
 
 	hasher := hash.NewBcryptAdapter(12)
-	jwt := jwt.NewJWTAdapter([]byte("secret"))
+	jwt := jwt.NewJWTAdapter([]byte(os.Getenv("JWT_SECRET")))
 	userRepo := repositories.NewUserRepository(db)
 	loginUseCase := usecase.NewLoginUserCase(userRepo, hasher, jwt)
 

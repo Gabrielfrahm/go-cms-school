@@ -24,7 +24,7 @@ func NewJWTAdapter(secretKey []byte) adapters.JWTPort {
 }
 
 func (jwtAdapter *JWTAdapter) Create(userID string) (string, error) {
-	expirationTime := time.Now().Add(5 * 60 * 60) // 5 dyas
+	expirationTime := time.Now().Add(5 * time.Minute) // 5 dyas
 	claims := &JWTClaims{
 		UserID: userID,
 		StandardClaims: jwt.StandardClaims{

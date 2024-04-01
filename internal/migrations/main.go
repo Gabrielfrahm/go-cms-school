@@ -14,7 +14,7 @@ import (
 )
 
 // go run internal/migrations/main.go -action=up -steps=
-// go run internal/migrations/main.go -action=down -steps=
+// go run internal/migrations/main.go -action=down -steps=-number
 func main() {
 	// initial configs
 	cfg := config.Load()
