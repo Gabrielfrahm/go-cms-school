@@ -27,6 +27,9 @@ func (r *UserRepository) FindByEmail(email string) (*entity.User, error) {
 		type_user           string
 		profile_id          string
 		profile_name        string
+		profile_createdAt   sql.NullTime
+		profile_updatedAt   sql.NullTime
+		profile_deletedAt   sql.NullTime
 		permission_users    int
 		permission_classes  int
 		permission_profiles int
@@ -42,8 +45,11 @@ func (r *UserRepository) FindByEmail(email string) (*entity.User, error) {
 			u.email, 
 			u.password, 
 			u.type_user,
-			u.profile_id ,
+			u.profile_id,
 			p.name AS profile_name,
+			p.created_at as profile_created_at, 
+			p.updated_at as profile_updated_at, 
+			p.deleted_at as profile_deleted_at,
 			perm.users as profile_users,
 			perm.classes as profile_classes,
 			perm.profiles as profile_profiles,
@@ -67,6 +73,9 @@ func (r *UserRepository) FindByEmail(email string) (*entity.User, error) {
 		&type_user,
 		&profile_id,
 		&profile_name,
+		&profile_createdAt,
+		&profile_updatedAt,
+		&profile_deletedAt,
 		&permission_users,
 		&permission_classes,
 		&permission_profiles,
@@ -86,7 +95,7 @@ func (r *UserRepository) FindByEmail(email string) (*entity.User, error) {
 
 	permissions := permission.NewPermission(permission_users, permission_classes, permission_profiles, permission_lessons)
 
-	profile := profile.NewProfile(&profile_id, profile_name, *permissions, &createdAt.Time, &updatedAt.Time, &deletedAt.Time)
+	profile := profile.NewProfile(&profile_id, profile_name, *permissions, &profile_createdAt.Time, &profile_updatedAt.Time, &profile_deletedAt.Time)
 
 	return entity.NewUser(&id, &name, &emailsql, &password, type_user, *profile, *permissions, &createdAt.Time, &updatedAt.Time, &deletedAt.Time), nil
 }

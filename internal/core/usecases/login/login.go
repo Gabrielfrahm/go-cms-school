@@ -2,6 +2,7 @@ package login
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/entities/user"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/ports/adapters"
@@ -12,12 +13,14 @@ import (
 type LoginUseCase struct {
 	userRepo repositories.UserRepository
 	hasher   adapters.Hash
+	Jwt      adapters.JWTPort
 }
 
-func NewLoginUserCase(userRepo repositories.UserRepository, hasher adapters.Hash) usecases.LoginUseCase {
+func NewLoginUserCase(userRepo repositories.UserRepository, hasher adapters.Hash, jwt adapters.JWTPort) usecases.LoginUseCase {
 	return &LoginUseCase{
 		userRepo: userRepo,
 		hasher:   hasher,
+		Jwt:      jwt,
 	}
 }
 
@@ -35,5 +38,10 @@ func (l *LoginUseCase) Login(email string, password string) (*user.User, error) 
 		return nil, errors.New("email or password incorrect")
 	}
 
+	token, err := l.Jwt.Create(user.ID)
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+	fmt.Println(token)
 	return user, nil
 }
