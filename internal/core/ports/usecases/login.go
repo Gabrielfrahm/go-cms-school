@@ -1,7 +1,9 @@
 package usecases
 
-import "github.com/Gabrielfrahm/go-cms-school/internal/core/entities/user"
+type LoginResponse struct {
+	Token string
+}
 
 type LoginUseCase interface {
-	Login(email, password string) (*user.User, error)
+	Login(email, password string) (*LoginResponse, error)
 }

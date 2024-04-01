@@ -2,10 +2,9 @@ package login
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
-	hhtpError "github.com/Gabrielfrahm/go-cms-school/internal/adapters/api/error"
+	httpError "github.com/Gabrielfrahm/go-cms-school/internal/adapters/api/error"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/ports/usecases"
 )
 
@@ -26,23 +25,22 @@ func (c *LoginController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !hhtpError.ValidateRequest(req, w, validationMessages) {
+	if !httpError.ValidateRequest(req, w, validationMessages) {
 		return // Pare a execução se a validação falhar
 	}
 
 	user, err := c.loginUseCase.Login(req.Email, req.Password)
 	if err != nil {
-		fmt.Println("esse aqui é o erro", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	userJSON, err := json.Marshal(user)
+	loginResponse, err := json.Marshal(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(userJSON))
+	w.Write([]byte(loginResponse))
 }
