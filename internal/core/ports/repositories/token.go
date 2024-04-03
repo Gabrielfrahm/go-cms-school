@@ -9,4 +9,5 @@ type ReturnCreate struct {
 
 type TokenRepository interface {
 	Create(userID string, token *token.Token) (*ReturnCreate, error)
+	Destroy(token string) error
 }

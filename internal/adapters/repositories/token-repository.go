@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 
 	entity "github.com/Gabrielfrahm/go-cms-school/internal/core/entities/token"
@@ -62,4 +63,30 @@ func (r *TokenRepository) Create(userID string, token *entity.Token) (*repositor
 	}
 
 	return &response, nil
+}
+
+func (r *TokenRepository) Destroy(token string) error {
+	rows, err := r.db.Query(
+		"SELECT * FROM user_tokens WHERE token = $1", token,
+	)
+
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return errors.New("token not found")
+	} else {
+		statement, err := r.db.Prepare("DELETE FROM user_tokens WHERE token = $1")
+		if err != nil {
+			return err
+		}
+		defer statement.Close()
+		if _, err = statement.Exec(token); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -15,7 +15,9 @@ func SetupRoutes(db *sql.DB) *chi.Mux {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	jwt := jwt.NewJWTAdapter([]byte(os.Getenv("JWT_SECRET")))
-	router.Mount("/login", LoginRoutes(db)) //login
+
+	router.Mount("/login", LoginRoutes(db))   //login
+	router.Mount("/logout", LogoutRoutes(db)) //logout
 
 	router.With(middlewares.AuthMiddleware(jwt, db)).Get("/private", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("This is a private endpoint"))
