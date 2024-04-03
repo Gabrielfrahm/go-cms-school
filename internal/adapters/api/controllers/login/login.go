@@ -29,13 +29,13 @@ func (c *LoginController) Login(w http.ResponseWriter, r *http.Request) {
 		return // Pare a execução se a validação falhar
 	}
 
-	user, err := c.loginUseCase.Login(req.Email, req.Password)
+	response, err := c.loginUseCase.Login(req.Email, req.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	loginResponse, err := json.Marshal(user)
+	loginResponse, err := json.Marshal(response)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

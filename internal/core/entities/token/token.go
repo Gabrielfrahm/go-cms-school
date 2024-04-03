@@ -20,7 +20,7 @@ func NewToken(
 		Token:        token,
 		RefreshToken: refreshToken,
 		ExpiresAt:    expiresAt,
-		CreatedAt:    expiresAt,
-		UpdatedAt:    expiresAt,
+		CreatedAt:    createdAt,
+		UpdatedAt:    updatedAt,
 	}
 }

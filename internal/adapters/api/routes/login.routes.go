@@ -18,7 +18,8 @@ func LoginRoutes(db *sql.DB) chi.Router {
 	hasher := hash.NewBcryptAdapter(12)
 	jwt := jwt.NewJWTAdapter([]byte(os.Getenv("JWT_SECRET")))
 	userRepo := repositories.NewUserRepository(db)
-	loginUseCase := usecase.NewLoginUserCase(userRepo, hasher, jwt)
+	tokenRepo := repositories.NewTokenRepository(db)
+	loginUseCase := usecase.NewLoginUserCase(userRepo, tokenRepo, hasher, jwt)
 
 	r.Post("/", login.NewLoginController(loginUseCase).Login) // Login /users
 	return r

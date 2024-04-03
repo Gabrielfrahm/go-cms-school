@@ -1,7 +1,8 @@
 package usecases
 
 type LoginResponse struct {
-	Token string
+	Token         string
+	Refresh_token string
 }
 
 type LoginUseCase interface {
