@@ -64,3 +64,20 @@ func (jwtAdapter *JWTAdapter) Validate(tokenString string) (bool, error) {
 
 	return false, nil
 }
+
+func (jwtAdapter *JWTAdapter) ExtractUserID(tokenString string) (string, error) {
+	// Parse do token
+	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return jwtAdapter.secretKey, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
+		return claims.UserID, nil
+	} else {
+		return "", fmt.Errorf("invalid token")
+	}
+}

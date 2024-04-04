@@ -19,7 +19,10 @@ func SetupRoutes(db *sql.DB) *chi.Mux {
 	router.Mount("/login", LoginRoutes(db))   //login
 	router.Mount("/logout", LogoutRoutes(db)) //logout
 
-	router.With(middlewares.AuthMiddleware(jwt, db)).Get("/private", func(w http.ResponseWriter, r *http.Request) {
+	router.With(
+		middlewares.AuthMiddleware(jwt, db),
+		middlewares.PermissionMiddleware(jwt, db, map[string]int{"classes": 16, "users": 15}),
+	).Get("/private", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("This is a private endpoint"))
 	})
 
