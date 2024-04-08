@@ -69,7 +69,7 @@ func PermissionMiddleware(jwtAdapter adapters.JWTPort, db *sql.DB, requiredPermi
 			hasPermission := false
 			for route, requiredPermission := range requiredPermissions {
 				userPermission, exists := userPermissions[route]
-				if exists && userPermission >= requiredPermission {
+				if exists && (userPermission&requiredPermission == requiredPermission) {
 					hasPermission = true
 					break
 				}
