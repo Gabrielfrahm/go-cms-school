@@ -21,3 +21,15 @@ var CreateUserValidationMessages = map[string]string{
 	"email":    "The field should be email valid",
 	"min":      "The field must have at least 6 characters",
 }
+
+type ListAllUserRequest struct {
+	Page     int     `json:"page" validate:"required"`
+	PerPage  int     `json:"perPage" validate:"required"`
+	Name     *string `json:"name" validate:"omitempty"`
+	Email    *string `json:"email" validate:"omitempty"`
+	TypeUser *string `json:"type_user"  validate:"omitempty,oneof=ADMIN ADMIN_SCHOOL TEACHER STUDENT"`
+}
+
+var ListAllUserValidationMessages = map[string]string{
+	"required": "The field is required",
+}

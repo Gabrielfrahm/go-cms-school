@@ -24,7 +24,13 @@ func UserRoutes(db *sql.DB) chi.Router {
 
 	r.With(
 		middlewares.AuthMiddleware(jwt, db),
-		middlewares.PermissionMiddleware(jwt, db, map[string]int{"users": 1}),
+		middlewares.PermissionMiddleware(jwt, db, map[string]int{"users": 2}),
 	).Post("/", user.NewUserController(userUseCase).CreateUser) // create user /users
+
+	r.With(
+		middlewares.AuthMiddleware(jwt, db),
+		middlewares.PermissionMiddleware(jwt, db, map[string]int{"users": 1}),
+	).Get("/", user.NewUserController(userUseCase).ListAllUser) // list all user /users
+
 	return r
 }

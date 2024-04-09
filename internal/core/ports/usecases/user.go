@@ -4,6 +4,7 @@ import "github.com/Gabrielfrahm/go-cms-school/internal/core/entities/user"
 
 type UserUseCase interface {
 	CreateUser(input CreateUserInput) (*user.User, error)
+	ListAllUser(input ListAllUserInput) (*ListAllUserOutput, error)
 }
 
 type Permissions struct {
@@ -20,4 +21,24 @@ type CreateUserInput struct {
 	TypeUser   string
 	ProfileId  string
 	Permission Permissions
+}
+
+type ListAllUserInput struct {
+	Page     *int
+	PerPage  *int
+	Name     *string
+	Email    *string
+	TypeUser *string
+}
+
+type ListAllUserOutput struct {
+	Data struct {
+		Users []user.User
+	}
+	Meta struct {
+		Page     int
+		PerPage  int
+		Total    int
+		LastPage int
+	}
 }

@@ -64,9 +64,6 @@ func (r *ProfileRepository) FindById(id string) (*profile.Profile, error) {
 	)
 
 	if err != nil {
-		return &profile.Profile{}, err
-	}
-	if err != nil {
 		if err == sql.ErrNoRows {
 			fmt.Println(err)
 			return nil, errors.New("profile not found")

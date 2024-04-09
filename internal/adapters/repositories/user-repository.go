@@ -3,10 +3,12 @@ package repositories
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/entities/permission"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/entities/profile"
 	entity "github.com/Gabrielfrahm/go-cms-school/internal/core/entities/user"
+	"github.com/Gabrielfrahm/go-cms-school/internal/core/ports/repositories"
 )
 
 type UserRepository struct {
@@ -134,9 +136,6 @@ func (r *UserRepository) Create(user *entity.User) (*entity.User, error) {
 	defer stmt.Close()
 
 	stmt.Exec(userID, user.Permissions.Users, user.Permissions.Classes, user.Permissions.Profiles, user.Permissions.Lessons)
-	if err != nil {
-		return &entity.User{}, err
-	}
 
 	if err := tx.Commit(); err != nil {
 		return &entity.User{}, err
@@ -145,4 +144,127 @@ func (r *UserRepository) Create(user *entity.User) (*entity.User, error) {
 	user.ID = userID
 
 	return user, nil
+}
+
+func (r *UserRepository) ListAllUser(input repositories.ListAllUserInput) ([]entity.User, int, error) {
+	// todo tem que retornar as permissoes do perfil.
+	var users []entity.User
+	var total int
+	query := `SELECT 
+	u.id,
+	u.name, 
+	u.email, 
+	u.password, 
+	u.type_user,
+	u.profile_id,
+	p.name AS profile_name,
+	p.type_user as profile_type_user,
+	p.created_at as profile_created_at, 
+	p.updated_at as profile_updated_at, 
+	p.deleted_at as profile_deleted_at,
+	perm.users as profile_users,
+	perm.classes as profile_classes,
+	perm.profiles as profile_profiles,
+	perm.lessons as profile_lessons,
+	u.created_at, 
+	u.updated_at, 
+	u.deleted_at
+	FROM 
+		users u
+	JOIN 
+		profiles p ON u.profile_id = p.id
+	JOIN 
+		user_permissions perm ON u.id = perm.user_id
+	WHERE 
+	1 = 1`
+
+	// parametros do filtros
+	if input.Name != nil {
+		query += " AND u.name ILIKE '%" + *input.Name + "%'"
+	}
+	if input.Email != nil {
+		query += " AND u.email ILIKE '%" + *input.Email + "%'"
+	}
+	if input.TypeUser != nil {
+		query += " AND u.type_user ILIKE '%" + *input.TypeUser + "%'"
+	}
+
+	// Adicione paginação a consulta
+	offset := (*input.Page - 1) * *input.PerPage
+	query += fmt.Sprintf(" LIMIT %d OFFSET %d", input.PerPage, offset)
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user entity.User
+		var profile profile.Profile
+		var permission permission.Permission
+		var createdAt, updatedAt, deletedAt sql.NullTime
+		var profileCreatedAt, profileUpdatedAt, profileDeletedAt sql.NullTime
+		if err := rows.Scan(
+			&user.ID,
+			&user.Name,
+			&user.Email,
+			&user.Password,
+			&user.Type_user,
+			&user.Profile.ID,
+			&profile.Name,
+			&profile.TypeUser,
+			&profileCreatedAt,
+			&profileUpdatedAt,
+			&profileDeletedAt,
+			&permission.Users,
+			&permission.Classes,
+			&permission.Profiles,
+			&permission.Lessons,
+			&createdAt,
+			&updatedAt,
+			&deletedAt,
+		); err != nil {
+			return nil, 0, err
+		}
+
+		if createdAt.Valid {
+			user.Created_at = &createdAt.Time
+		}
+		if updatedAt.Valid {
+			user.Updated_at = &updatedAt.Time
+		}
+		if deletedAt.Valid {
+			user.Deleted_at = &deletedAt.Time
+		}
+		if profileCreatedAt.Valid {
+			profile.Created_at = &profileCreatedAt.Time
+		}
+		if profileUpdatedAt.Valid {
+			profile.Updated_at = &profileUpdatedAt.Time
+		}
+		if profileDeletedAt.Valid {
+			profile.Deleted_at = &profileDeletedAt.Time
+		}
+
+		user.Profile = profile
+		user.Permissions = permission
+		users = append(users, user)
+	}
+
+	// count dos totais de items.
+	countQuery := `SELECT COUNT(*) FROM users WHERE 1=1`
+	if input.Name != nil {
+		countQuery += " AND name ILIKE '%" + *input.Name + "%'"
+	}
+	if input.Email != nil {
+		countQuery += " AND email ILIKE '%" + *input.Email + "%'"
+	}
+
+	err = r.db.QueryRow(countQuery).Scan(&total)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }
