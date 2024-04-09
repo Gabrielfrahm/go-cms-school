@@ -162,10 +162,14 @@ func (r *UserRepository) ListAllUser(input repositories.ListAllUserInput) ([]ent
 	p.created_at as profile_created_at, 
 	p.updated_at as profile_updated_at, 
 	p.deleted_at as profile_deleted_at,
-	perm.users as profile_users,
-	perm.classes as profile_classes,
-	perm.profiles as profile_profiles,
-	perm.lessons as profile_lessons,
+	perm.users as user_users,
+	perm.classes as user_classes,
+	perm.profiles as user_profiles,
+	perm.lessons as user_lessons,
+	pp.users as permission_users,
+	pp.classes as permission_classes,
+	pp.profiles as permission_profiles,
+	pp.lessons as permission_lessons, 
 	u.created_at, 
 	u.updated_at, 
 	u.deleted_at
@@ -175,6 +179,8 @@ func (r *UserRepository) ListAllUser(input repositories.ListAllUserInput) ([]ent
 		profiles p ON u.profile_id = p.id
 	JOIN 
 		user_permissions perm ON u.id = perm.user_id
+	JOIN
+		profile_permissions pp ON p.id = pp.profile_id 
 	WHERE 
 	1 = 1`
 
@@ -221,6 +227,10 @@ func (r *UserRepository) ListAllUser(input repositories.ListAllUserInput) ([]ent
 			&permission.Classes,
 			&permission.Profiles,
 			&permission.Lessons,
+			&profile.Permissions.Users,
+			&profile.Permissions.Classes,
+			&profile.Permissions.Profiles,
+			&profile.Permissions.Lessons,
 			&createdAt,
 			&updatedAt,
 			&deletedAt,
