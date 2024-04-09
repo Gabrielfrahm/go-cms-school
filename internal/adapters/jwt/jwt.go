@@ -24,7 +24,7 @@ func NewJWTAdapter(secretKey []byte) adapters.JWTPort {
 }
 
 func (jwtAdapter *JWTAdapter) Create(userID string, expiresAt *time.Time) (string, error) {
-	expirationTime := time.Now().Add(5 * time.Minute) // 5 minutes
+	expirationTime := time.Now().Add(10 * time.Minute) // 5 minutes
 	if expiresAt != nil {
 		fmt.Println(expiresAt)
 		expirationTime = *expiresAt

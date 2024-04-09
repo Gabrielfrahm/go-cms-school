@@ -3,7 +3,6 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/entities/permission"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/entities/profile"
@@ -90,7 +89,6 @@ func (r *UserRepository) FindByEmail(email string) (*entity.User, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println(err)
 			return nil, errors.New("user not found")
 		}
 		return nil, err // Outro erro de banco de dados
@@ -104,8 +102,9 @@ func (r *UserRepository) FindByEmail(email string) (*entity.User, error) {
 }
 
 func (r *UserRepository) Create(user *entity.User) (*entity.User, error) {
+
 	if user.Email != nil {
-		rows, err := r.db.Query("SELECT email FROM users WHERE = $1", user.Email)
+		rows, err := r.db.Query("SELECT email FROM users WHERE email = $1", user.Email)
 		if err != nil {
 			return &entity.User{}, err
 		}
@@ -123,12 +122,6 @@ func (r *UserRepository) Create(user *entity.User) (*entity.User, error) {
 	defer tx.Rollback()
 	var userID string
 	err = tx.QueryRow("INSERT INTO users (name, email, password, type_user, profile_id, created_at, updated_at, deleted_at) VALUES ($1, $2, $3,$4,$5,$6,$7, $8) RETURNING id", user.Name, user.Email, user.Password, user.Type_user, user.Profile.ID, user.Created_at, user.Updated_at, user.Deleted_at).Scan(&userID)
-	if err != nil {
-		return &entity.User{}, err
-	}
-
-	// Get the last inserted ID
-
 	if err != nil {
 		return &entity.User{}, err
 	}

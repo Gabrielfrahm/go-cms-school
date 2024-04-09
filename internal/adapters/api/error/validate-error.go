@@ -1,6 +1,7 @@
 package error
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-playground/validator"
@@ -21,6 +22,7 @@ func ValidateRequest(req interface{}, w http.ResponseWriter, validationMessages 
 			SendValidationErrorResponse(w, "VALIDATION_ERROR", "Validation error occurred", details)
 			return false
 		}
+		fmt.Println("caiu aqui 2")
 		http.Error(w, "Validation error", http.StatusBadRequest)
 		return false
 	}

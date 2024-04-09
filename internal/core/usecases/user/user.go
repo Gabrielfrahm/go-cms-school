@@ -27,13 +27,10 @@ func NewUserUseCase(userRepo repositories.UserRepository, hash adapters.Hash, pr
 
 // CreateUser implements usecases.UserUseCase.
 func (u *UserUserCase) CreateUser(input usecases.CreateUserInput) (*entity.User, error) {
+
 	var password string
 	if input.Email != nil {
-		user, err := u.userRepo.FindByEmail(*input.Email)
-
-		if err != nil {
-			return &entity.User{}, err
-		}
+		user, _ := u.userRepo.FindByEmail(*input.Email)
 
 		if user != nil {
 			return &entity.User{}, errors.New("email already in use")
@@ -49,7 +46,7 @@ func (u *UserUserCase) CreateUser(input usecases.CreateUserInput) (*entity.User,
 		password = hashedValue
 	}
 
-	profile, err := u.profileRepo.FindByEmail(input.ProfileId)
+	profile, err := u.profileRepo.FindById(input.ProfileId)
 
 	if err != nil {
 		return &entity.User{}, errors.New(err.Error())

@@ -18,6 +18,7 @@ func SetupRoutes(db *sql.DB) *chi.Mux {
 
 	router.Mount("/login", LoginRoutes(db))   //login
 	router.Mount("/logout", LogoutRoutes(db)) //logout
+	router.Mount("/users", UserRoutes(db))    //user
 
 	router.With(
 		middlewares.AuthMiddleware(jwt, db),

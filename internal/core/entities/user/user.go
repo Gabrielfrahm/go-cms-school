@@ -49,6 +49,11 @@ func NewUser(
 		updatedAt = &now
 	}
 
+	if deletedAt == nil {
+		now := time.Now()
+		deletedAt = &now
+	}
+
 	return &User{
 		ID:          newID,
 		Name:        name,

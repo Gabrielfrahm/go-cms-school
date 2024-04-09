@@ -17,7 +17,7 @@ func NewProfileRepository(db *sql.DB) *ProfileRepository {
 	return &ProfileRepository{db: db}
 }
 
-func (r *ProfileRepository) FindByEmail(id string) (*profile.Profile, error) {
+func (r *ProfileRepository) FindById(id string) (*profile.Profile, error) {
 	var (
 		idSql               string
 		name                string
@@ -34,7 +34,7 @@ func (r *ProfileRepository) FindByEmail(id string) (*profile.Profile, error) {
 	// check if user has token in db.
 	err := r.db.QueryRow(
 		`SELECT 
-		p.id AS profile_is,
+			p.id AS profile_is,
 			p.name AS profile_name,
 			p.type_user as profile_type_user,
 			p.created_at as profile_created_at, 
@@ -54,13 +54,13 @@ func (r *ProfileRepository) FindByEmail(id string) (*profile.Profile, error) {
 	).Scan(&idSql,
 		&name,
 		&type_user,
+		&createdAt,
+		&updatedAt,
+		&deletedAt,
 		&permission_users,
 		&permission_classes,
 		&permission_profiles,
 		&permission_lessons,
-		&createdAt,
-		&updatedAt,
-		&deletedAt,
 	)
 
 	if err != nil {
