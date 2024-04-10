@@ -217,7 +217,7 @@ func (r *UserRepository) ListAllUser(input repositories.ListAllUserInput) ([]ent
 			&user.Email,
 			&user.Password,
 			&user.Type_user,
-			&user.Profile.ID,
+			&profile.ID,
 			&profile.Name,
 			&profile.TypeUser,
 			&profileCreatedAt,
@@ -277,4 +277,82 @@ func (r *UserRepository) ListAllUser(input repositories.ListAllUserInput) ([]ent
 	}
 
 	return users, total, nil
+}
+
+func (r *UserRepository) FindById(input string) (*entity.User, error) {
+	var user entity.User
+	var profile profile.Profile
+	var permission permission.Permission
+	var createdAt, updatedAt, deletedAt sql.NullTime
+	var profileCreatedAt, profileUpdatedAt, profileDeletedAt sql.NullTime
+
+	err := r.db.QueryRow(
+		`SELECT 
+		u.id,
+		u.name, 
+		u.email, 
+		u.password, 
+		u.type_user,
+		u.profile_id,
+		p.name AS profile_name,
+		p.type_user as profile_type_user,
+		p.created_at as profile_created_at, 
+		p.updated_at as profile_updated_at, 
+		p.deleted_at as profile_deleted_at,
+		perm.users as user_users,
+		perm.classes as user_classes,
+		perm.profiles as user_profiles,
+		perm.lessons as user_lessons,
+		pp.users as permission_users,
+		pp.classes as permission_classes,
+		pp.profiles as permission_profiles,
+		pp.lessons as permission_lessons, 
+		u.created_at, 
+		u.updated_at, 
+		u.deleted_at
+		FROM 
+			users u
+		JOIN 
+			profiles p ON u.profile_id = p.id
+		JOIN 
+			user_permissions perm ON u.id = perm.user_id
+		JOIN
+			profile_permissions pp ON p.id = pp.profile_id 
+		WHERE 
+		u.id = $1`,
+		input,
+	).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.Password,
+		&user.Type_user,
+		&profile.ID,
+		&profile.Name,
+		&profile.TypeUser,
+		&profileCreatedAt,
+		&profileUpdatedAt,
+		&profileDeletedAt,
+		&permission.Users,
+		&permission.Classes,
+		&permission.Profiles,
+		&permission.Lessons,
+		&profile.Permissions.Users,
+		&profile.Permissions.Classes,
+		&profile.Permissions.Profiles,
+		&profile.Permissions.Lessons,
+		&createdAt,
+		&updatedAt,
+		&deletedAt,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("user not found")
+		}
+		return nil, err // Outro erro de banco de dados
+	}
+	user.Profile = profile
+	user.Permissions = permission
+	return &user, nil
 }

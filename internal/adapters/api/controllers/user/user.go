@@ -7,6 +7,7 @@ import (
 
 	httpError "github.com/Gabrielfrahm/go-cms-school/internal/adapters/api/error"
 	"github.com/Gabrielfrahm/go-cms-school/internal/core/ports/usecases"
+	"github.com/go-chi/chi/v5"
 )
 
 type UserController struct {
@@ -117,4 +118,31 @@ func (u *UserController) ListAllUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(ListAllUserResponse))
+}
+
+func (u *UserController) ListById(w http.ResponseWriter, r *http.Request) {
+	idParam := chi.URLParam(r, "id")
+
+	var req ListByIdRequest
+
+	req.ID = idParam
+
+	if !httpError.ValidateRequest(req, w, ListByIdValidationMessages) {
+		return // Pare a execução se a validação falhar
+	}
+
+	response, err := u.UserUseCase.ListById(req.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ListByIDUserResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(ListByIDUserResponse))
 }

@@ -14,4 +14,5 @@ type UserRepository interface {
 	FindByEmail(email string) (*user.User, error)
 	Create(user *user.User) (*user.User, error)
 	ListAllUser(input ListAllUserInput) ([]user.User, int, error)
+	FindById(input string) (*user.User, error)
 }

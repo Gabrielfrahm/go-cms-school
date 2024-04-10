@@ -5,6 +5,7 @@ import "github.com/Gabrielfrahm/go-cms-school/internal/core/entities/user"
 type UserUseCase interface {
 	CreateUser(input CreateUserInput) (*user.User, error)
 	ListAllUser(input ListAllUserInput) (*ListAllUserOutput, error)
+	ListById(input string) (*user.User, error)
 }
 
 type Permissions struct {

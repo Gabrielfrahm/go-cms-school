@@ -103,3 +103,13 @@ func (u *UserUserCase) ListAllUser(input usecases.ListAllUserInput) (*usecases.L
 
 	return output, nil
 }
+
+// ListById implements usecases.UserUseCase.
+func (u *UserUserCase) ListById(input string) (*entity.User, error) {
+	user, err := u.userRepo.FindById(input)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

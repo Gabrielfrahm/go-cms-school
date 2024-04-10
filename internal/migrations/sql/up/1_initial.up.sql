@@ -28,14 +28,14 @@ CREATE TABLE users(
     "email" TEXT UNIQUE,
     "password" TEXT,
     "type_user" TEXT NOT NULL,
-    "profile_id" uuid REFERENCES profiles(id),
+    "profile_id" uuid REFERENCES profiles(id) ON DELETE CASCADE,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deleted_at" TIMESTAMP(3)
 );
 
 CREATE TABLE user_permissions (
-    "user_id" uuid REFERENCES users(id),
+    "user_id" uuid REFERENCES users(id) ON DELETE CASCADE,
     "users" INT NOT NULL, 
     "classes" INT NOT NULL,
     "profiles" INT NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE user_permissions (
 
 
 CREATE TABLE profile_permissions (
-    "profile_id" uuid REFERENCES profiles(id),
+    "profile_id" uuid REFERENCES profiles(id) ON DELETE CASCADE,
     "users" INT NOT NULL, 
     "classes" INT NOT NULL,
     "profiles" INT NOT NULL,

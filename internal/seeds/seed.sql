@@ -47,10 +47,6 @@ INSERT INTO users (name, type_user, email, password, profile_id)
 SELECT 'TEACHER', 'TEACHER', 'teacher@dev.com','$2a$12$B7EW8DXW3mFGJi10Rcceo.YfXW2Rm0eEqCc9ShXWq4kONNp8vhZqy', (SELECT id FROM profiles WHERE name = 'TEACHER')
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE email = 'teacher@dev.com');
 
-INSERT INTO users (name, type_user, password, profile_id)
-SELECT 'STUDENT','STUDENT','$2a$12$B7EW8DXW3mFGJi10Rcceo.YfXW2Rm0eEqCc9ShXWq4kONNp8vhZqy', (SELECT id FROM profiles WHERE name = 'STUDENT')
-WHERE NOT EXISTS (SELECT 1 FROM users WHERE type_user = 'STUDENT');
-
 -- seed user_permissions
 INSERT INTO user_permissions (user_id, users, classes, profiles, lessons)
 SELECT (SELECT id FROM users WHERE email = 'admin@admin.com'), 15, 15,15,15
@@ -63,10 +59,5 @@ WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE user_id = (SELECT id FROM
 INSERT INTO user_permissions (user_id, users, classes, profiles, lessons)
 SELECT (SELECT id FROM users WHERE email = 'teacher@dev.com'), 0, 15, 0 , 15
 WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE user_id = (SELECT id FROM users WHERE email = 'teacher@dev.com'));
-
-INSERT INTO user_permissions (user_id, users, classes, profiles, lessons)
-SELECT (SELECT id FROM users WHERE type_user = 'STUDENT'), 0, 15,0 , 15
-WHERE NOT EXISTS (SELECT 1 FROM user_permissions WHERE user_id = (SELECT id FROM users WHERE type_user = 'STUDENT'));
-
 
 COMMIT;

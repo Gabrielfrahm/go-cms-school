@@ -33,3 +33,11 @@ type ListAllUserRequest struct {
 var ListAllUserValidationMessages = map[string]string{
 	"required": "The field is required",
 }
+
+type ListByIdRequest struct {
+	ID string `json:"id" validate:"required"`
+}
+
+var ListByIdValidationMessages = map[string]string{
+	"required": "The field is required",
+}

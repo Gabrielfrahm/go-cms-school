@@ -9,7 +9,7 @@ $$;
 DROP TABLE IF EXISTS user_tokens;
 
 CREATE TABLE user_tokens(
-    "user_id" uuid REFERENCES users(id),
+    "user_id" uuid REFERENCES users(id) ON DELETE CASCADE,
     "token" TEXT NOT NULL,
     "refresh_token"  TEXT NOT NULL,
     "expires_at" TIMESTAMP(3),
